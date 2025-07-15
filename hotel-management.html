@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the hotel management app */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #2d3748; /* Dark blue-gray header */
+            color: #ffffff;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .nav-buttons button {
+            background-color: #4299e1; /* Blue for nav buttons */
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; /* Rounded corners */
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-left: 1rem;
+        }
+
+        .nav-buttons button:hover {
+            background-color: #3182ce;
+            transform: translateY(-1px);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .card-header {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            color: #ffffff;
+        }
+
+        .action-buttons .btn-primary {
+            background-color: #38a169; /* Green for primary actions */
+        }
+
+        .action-buttons .btn-primary:hover {
+            background-color: #2f855a;
+            transform: translateY(-1px);
+        }
+
+        .action-buttons .btn-secondary {
+            background-color: #e53e3e; /* Red for secondary actions */
+        }
+
+        .action-buttons .btn-secondary:hover {
+            background-color: #c53030;
+            transform: translateY(-1px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid #edf2f7;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #e2e8f0;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        .data-table tr:hover {
+            background-color: #ebf8ff;
+        }
+
+        /* Message box for alerts */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            text-align: center;
+        }
+
+        .message-box p {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+        }
+
+        .message-box button {
+            background-color: #4299e1;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .message-box button:hover {
+            background-color: #3182ce;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none; /* Hidden by default */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+            .header h1 {
+                margin-bottom: 1rem;
+                font-size: 1.75rem;
+            }
+            .nav-buttons {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .nav-buttons button {
+                margin-left: 0;
+                flex-grow: 1;
+            }
+            .main-content {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+            .card-header {
+                font-size: 1.5rem;
+            }
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Hotel Management System</h1>
+        <div class="nav-buttons">
+            <button onclick="showSection('rooms')">Rooms</button>
+            <button onclick="showSection('guests')">Guests</button>
+            <button onclick="showSection('bookings')">Bookings</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Rooms Section -->
+        <div id="rooms-section" class="card">
+            <div class="card-header">Room Management</div>
+            <form id="room-form">
+                <div class="form-group">
+                    <label for="roomNumber">Room Number:</label>
+                    <input type="text" id="roomNumber" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="roomType">Room Type:</label>
+                    <select id="roomType" class="rounded-lg">
+                        <option value="Standard">Standard</option>
+                        <option value="Deluxe">Deluxe</option>
+                        <option value="Suite">Suite</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="roomPrice">Price per Night:</label>
+                    <input type="number" id="roomPrice" step="0.01" required class="rounded-lg">
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn-primary">Add Room</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Room No.</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="room-list">
+                        <!-- Room data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Guests Section -->
+        <div id="guests-section" class="card hidden">
+            <div class="card-header">Guest Management</div>
+            <form id="guest-form">
+                <div class="form-group">
+                    <label for="guestName">Guest Name:</label>
+                    <input type="text" id="guestName" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="guestContact">Contact Info:</label>
+                    <input type="text" id="guestContact" required class="rounded-lg">
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn-primary">Add Guest</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guest-list">
+                        <!-- Guest data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bookings Section -->
+        <div id="bookings-section" class="card hidden">
+            <div class="card-header">Bookings Management</div>
+            <form id="booking-form">
+                <div class="form-group">
+                    <label for="bookingRoom">Room Number:</label>
+                    <select id="bookingRoom" required class="rounded-lg">
+                        <!-- Room options will be loaded dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bookingGuest">Guest Name:</label>
+                    <select id="bookingGuest" required class="rounded-lg">
+                        <!-- Guest options will be loaded dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="checkInDate">Check-in Date:</label>
+                    <input type="date" id="checkInDate" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="checkOutDate">Check-out Date:</label>
+                    <input type="date" id="checkOutDate" required class="rounded-lg">
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn-primary">Create Booking</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Room No.</th>
+                            <th>Guest Name</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="booking-list">
+                        <!-- Booking data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Box and Overlay -->
+    <div class="overlay" id="overlay"></div>
+    <div class="message-box" id="messageBox">
+        <p id="messageText"></p>
+        <button onclick="hideMessageBox()">OK</button>
+    </div>
+
+    <script>
+        // Data storage (in-memory for this example, would use a database in a real app)
+        let rooms = [];
+        let guests = [];
+        let bookings = [];
+        let nextRoomId = 1;
+        let nextGuestId = 1;
+        let nextBookingId = 1;
+
+        // Utility function to show a message box
+        function showMessageBox(message) {
+            document.getElementById('messageText').innerText = message;
+            document.getElementById('messageBox').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Utility function to hide the message box
+        function hideMessageBox() {
+            document.getElementById('messageBox').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Function to switch between sections
+        function showSection(sectionId) {
+            document.querySelectorAll('.card').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(`${sectionId}-section`).classList.remove('hidden');
+            updateBookingFormSelects(); // Update dropdowns when switching to booking section
+        }
+
+        // --- Room Management Functions ---
+        function addRoom(event) {
+            event.preventDefault();
+            const roomNumber = document.getElementById('roomNumber').value.trim();
+            const roomType = document.getElementById('roomType').value;
+            const roomPrice = parseFloat(document.getElementById('roomPrice').value);
+
+            if (!roomNumber || isNaN(roomPrice)) {
+                showMessageBox('Please fill in all room details correctly.');
+                return;
+            }
+
+            if (rooms.some(room => room.roomNumber === roomNumber)) {
+                showMessageBox('Room number already exists!');
+                return;
+            }
+
+            const newRoom = {
+                id: nextRoomId++,
+                roomNumber,
+                roomType,
+                roomPrice,
+                status: 'Available'
+            };
+            rooms.push(newRoom);
+            renderRooms();
+            document.getElementById('room-form').reset();
+            showMessageBox('Room added successfully!');
+        }
+
+        function deleteRoom(id) {
+            // Check if the room has any active bookings
+            const hasActiveBookings = bookings.some(booking =>
+                booking.roomId === id && booking.status === 'Checked-in'
+            );
+
+            if (hasActiveBookings) {
+                showMessageBox('Cannot delete room with active bookings. Please check out guests first.');
+                return;
+            }
+
+            rooms = rooms.filter(room => room.id !== id);
+            // Also remove any pending/completed bookings associated with this room
+            bookings = bookings.filter(booking => booking.roomId !== id);
+            renderRooms();
+            renderBookings(); // Re-render bookings as well
+            showMessageBox('Room deleted successfully!');
+        }
+
+        function renderRooms() {
+            const roomList = document.getElementById('room-list');
+            roomList.innerHTML = '';
+            rooms.forEach(room => {
+                const row = roomList.insertRow();
+                row.innerHTML = `
+                    <td>${room.roomNumber}</td>
+                    <td>${room.roomType}</td>
+                    <td>$${room.roomPrice.toFixed(2)}</td>
+                    <td>${room.status}</td>
+                    <td>
+                        <button onclick="deleteRoom(${room.id})" class="btn-secondary px-3 py-1 text-sm rounded-md">Delete</button>
+                    </td>
+                `;
+            });
+            updateBookingFormSelects(); // Update room dropdown in booking form
+        }
+
+        // --- Guest Management Functions ---
+        function addGuest(event) {
+            event.preventDefault();
+            const guestName = document.getElementById('guestName').value.trim();
+            const guestContact = document.getElementById('guestContact').value.trim();
+
+            if (!guestName || !guestContact) {
+                showMessageBox('Please fill in all guest details.');
+                return;
+            }
+
+            const newGuest = {
+                id: nextGuestId++,
+                name: guestName,
+                contact: guestContact
+            };
+            guests.push(newGuest);
+            renderGuests();
+            document.getElementById('guest-form').reset();
+            showMessageBox('Guest added successfully!');
+        }
+
+        function deleteGuest(id) {
+            // Check if the guest has any active bookings
+            const hasActiveBookings = bookings.some(booking =>
+                booking.guestId === id && booking.status === 'Checked-in'
+            );
+
+            if (hasActiveBookings) {
+                showMessageBox('Cannot delete guest with active bookings. Please check out guests first.');
+                return;
+            }
+
+            guests = guests.filter(guest => guest.id !== id);
+            // Also remove any pending/completed bookings associated with this guest
+            bookings = bookings.filter(booking => booking.guestId !== id);
+            renderGuests();
+            renderBookings(); // Re-render bookings as well
+            showMessageBox('Guest deleted successfully!');
+        }
+
+        function renderGuests() {
+            const guestList = document.getElementById('guest-list');
+            guestList.innerHTML = '';
+            guests.forEach(guest => {
+                const row = guestList.insertRow();
+                row.innerHTML = `
+                    <td>${guest.id}</td>
+                    <td>${guest.name}</td>
+                    <td>${guest.contact}</td>
+                    <td>
+                        <button onclick="deleteGuest(${guest.id})" class="btn-secondary px-3 py-1 text-sm rounded-md">Delete</button>
+                    </td>
+                `;
+            });
+            updateBookingFormSelects(); // Update guest dropdown in booking form
+        }
+
+        // --- Booking Management Functions ---
+        function createBooking(event) {
+            event.preventDefault();
+            const bookingRoomId = parseInt(document.getElementById('bookingRoom').value);
+            const bookingGuestId = parseInt(document.getElementById('bookingGuest').value);
+            const checkInDate = document.getElementById('checkInDate').value;
+            const checkOutDate = document.getElementById('checkOutDate').value;
+
+            if (!bookingRoomId || !bookingGuestId || !checkInDate || !checkOutDate) {
+                showMessageBox('Please fill in all booking details.');
+                return;
+            }
+
+            const room = rooms.find(r => r.id === bookingRoomId);
+            if (!room) {
+                showMessageBox('Selected room not found.');
+                return;
+            }
+
+            // Check for room availability
+            const isRoomBooked = bookings.some(b =>
+                b.roomId === bookingRoomId &&
+                (b.status === 'Pending' || b.status === 'Checked-in') &&
+                ((new Date(checkInDate) < new Date(b.checkOutDate) && new Date(checkOutDate) > new Date(b.checkInDate)))
+            );
+
+            if (isRoomBooked) {
+                showMessageBox('Room is already booked for the selected dates. Please choose different dates or another room.');
+                return;
+            }
+
+            const newBooking = {
+                id: nextBookingId++,
+                roomId: bookingRoomId,
+                guestId: bookingGuestId,
+                checkInDate,
+                checkOutDate,
+                status: 'Pending' // Initial status
+            };
+            bookings.push(newBooking);
+            renderBookings();
+            document.getElementById('booking-form').reset();
+            showMessageBox('Booking created successfully!');
+        }
+
+        function checkIn(bookingId) {
+            const booking = bookings.find(b => b.id === bookingId);
+            if (booking) {
+                const room = rooms.find(r => r.id === booking.roomId);
+                if (room) {
+                    if (room.status === 'Available') {
+                        booking.status = 'Checked-in';
+                        room.status = 'Occupied';
+                        renderBookings();
+                        renderRooms(); // Update room status display
+                        showMessageBox(`Guest checked into Room ${room.roomNumber}!`);
+                    } else {
+                        showMessageBox(`Room ${room.roomNumber} is currently ${room.status}. Cannot check in.`);
+                    }
+                }
+            }
+        }
+
+        function checkOut(bookingId) {
+            const booking = bookings.find(b => b.id === bookingId);
+            if (booking) {
+                const room = rooms.find(r => r.id === booking.roomId);
+                if (room) {
+                    if (booking.status === 'Checked-in') {
+                        booking.status = 'Completed';
+                        room.status = 'Available'; // Make room available again
+                        renderBookings();
+                        renderRooms(); // Update room status display
+                        showMessageBox(`Guest checked out from Room ${room.roomNumber}.`);
+                    } else {
+                        showMessageBox('Booking is not currently checked-in.');
+                    }
+                }
+            }
+        }
+
+        function cancelBooking(bookingId) {
+            const booking = bookings.find(b => b.id === bookingId);
+            if (booking) {
+                if (booking.status === 'Checked-in') {
+                    showMessageBox('Cannot cancel an active check-in. Please check out first.');
+                    return;
+                }
+                booking.status = 'Cancelled';
+                // If the room was pending, make it available again
+                const room = rooms.find(r => r.id === booking.roomId);
+                if (room && room.status === 'Pending') { // Assuming 'Pending' is a room status for pending bookings
+                     room.status = 'Available';
+                }
+                renderBookings();
+                renderRooms(); // Update room status display
+                showMessageBox('Booking cancelled.');
+            }
+        }
+
+        function renderBookings() {
+            const bookingList = document.getElementById('booking-list');
+            bookingList.innerHTML = '';
+            bookings.forEach(booking => {
+                const room = rooms.find(r => r.id === booking.roomId);
+                const guest = guests.find(g => g.id === booking.guestId);
+                const row = bookingList.insertRow();
+                row.innerHTML = `
+                    <td>${booking.id}</td>
+                    <td>${room ? room.roomNumber : 'N/A'}</td>
+                    <td>${guest ? guest.name : 'N/A'}</td>
+                    <td>${booking.checkInDate}</td>
+                    <td>${booking.checkOutDate}</td>
+                    <td>${booking.status}</td>
+                    <td>
+                        ${booking.status === 'Pending' ? `<button onclick="checkIn(${booking.id})" class="btn-primary px-3 py-1 text-sm rounded-md mr-2">Check-in</button>` : ''}
+                        ${booking.status === 'Checked-in' ? `<button onclick="checkOut(${booking.id})" class="btn-secondary px-3 py-1 text-sm rounded-md mr-2">Check-out</button>` : ''}
+                        ${booking.status === 'Pending' ? `<button onclick="cancelBooking(${booking.id})" class="btn-secondary px-3 py-1 text-sm rounded-md">Cancel</button>` : ''}
+                    </td>
+                `;
+            });
+        }
+
+        // Function to populate room and guest dropdowns in the booking form
+        function updateBookingFormSelects() {
+            const bookingRoomSelect = document.getElementById('bookingRoom');
+            const bookingGuestSelect = document.getElementById('bookingGuest');
+
+            bookingRoomSelect.innerHTML = '<option value="">Select Room</option>';
+            rooms.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room.id;
+                option.innerText = `${room.roomNumber} (${room.roomType}, $${room.roomPrice.toFixed(2)}) - ${room.status}`;
+                bookingRoomSelect.appendChild(option);
+            });
+
+            bookingGuestSelect.innerHTML = '<option value="">Select Guest</option>';
+            guests.forEach(guest => {
+                const option = document.createElement('option');
+                option.value = guest.id;
+                option.innerText = `${guest.name} (${guest.contact})`;
+                bookingGuestSelect.appendChild(option);
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('room-form').addEventListener('submit', addRoom);
+        document.getElementById('guest-form').addEventListener('submit', addGuest);
+        document.getElementById('booking-form').addEventListener('submit', createBooking);
+
+        // Initial rendering and setup
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRooms();
+            renderGuests();
+            renderBookings();
+            updateBookingFormSelects();
+            showSection('rooms'); // Show rooms section by default
+        });
+    </script>
+</body>
+</html>
